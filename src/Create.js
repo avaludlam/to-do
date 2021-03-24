@@ -1,32 +1,8 @@
-//firebase firestore
-
-// user {
-//   entries [
-//{
-//     id,
-//     Date,
-//     text,
-//     title,
-//   }
-//]
-// }
-
-//linking to a different page>>>>> react-router <Link to='/yourNewPage' /> list of entries (map)
-
-//create posts/entries
-
-//list view of your entries
-
 import React, { useState, useEffect } from "react";
 
 import {
   AppBar,
   Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  Paper,
   TextField,
   Toolbar,
   Typography,
@@ -34,25 +10,12 @@ import {
   CardActionArea,
   CardContent,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import { auth, db } from "./firebase";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Checkbox from "@material-ui/core/Checkbox";
-
-// Basic structure of a component a.k.a a page
-// function SomeName() {
-//   return (
-//     <div>Hello</div>
-//   )
-// }
 
 export function Create(props) {
   let history = useHistory();
   const [user, setUser] = useState(null);
-  const [tasks, setTasks] = useState([]);
-  const [new_task, setNewTasks] = useState("");
   const [new_entry, setNewEntry] = useState("");
 
   useEffect(() => {
@@ -87,7 +50,6 @@ export function Create(props) {
               id: doc.id,
             });
           });
-          setTasks(updated_tasks);
         });
     }
     return unsubscribe;
@@ -108,32 +70,6 @@ export function Create(props) {
 
   /////////////////////////////////////////
 
-  const handleAddTask = () => {
-    db.collection("users")
-      .doc(user.uid)
-      .collection("tasks")
-      .add({ text: new_task, checked: false })
-      .then(() => {
-        setNewTasks("");
-      });
-  };
-
-  const handleDeleteTask = (task_id) => {
-    db.collection("users")
-      .doc(user.uid)
-      .collection("tasks")
-      .doc(task_id)
-      .delete();
-  };
-
-  const handleCheckTask = (checked, task_id) => {
-    db.collection("users")
-      .doc(user.uid)
-      .collection("tasks")
-      .doc(task_id)
-      .update({ checked: checked });
-  };
-
   if (!user) {
     return <div />;
   }
@@ -149,9 +85,13 @@ export function Create(props) {
           >
             My Journal
           </Typography>
-          <Button color="inherit" onClick={handleSignOut}>
-            Archive
-          </Button>
+          <Link to="/archive" style={{ color: "white" , textDecoration: "none"}}>
+            <Button type="primary"
+              color="inherit"
+            >
+              Archive
+            </Button>
+          </Link>
           <Typography color="inherit" style={{ marginRight: "30px" }}>
             Hi! {user.email}
           </Typography>
