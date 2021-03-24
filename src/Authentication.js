@@ -4,7 +4,6 @@ import {
   AppBar,
   Button,
   Drawer,
-  IconButton,
   List,
   ListItem,
   ListItemText,

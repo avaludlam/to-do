@@ -40,7 +40,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Checkbox from "@material-ui/core/Checkbox";
-import { lightGreen } from "@material-ui/core/colors";
 
 // Basic structure of a component a.k.a a page
 // function SomeName() {
@@ -49,11 +48,12 @@ import { lightGreen } from "@material-ui/core/colors";
 //   )
 // }
 
-export function App(props) {
+export function Create(props) {
   let history = useHistory();
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [new_task, setNewTasks] = useState("");
+  const [new_entry, setNewEntry] = useState("");
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((u) => {
@@ -149,12 +149,8 @@ export function App(props) {
           >
             My Journal
           </Typography>
-          <Button
-            color="inherit"
-            //style={{ display: "flex", justifyContent: "center" }}
-            onClick={handleSignOut}
-          >
-            Create an Entry
+          <Button color="inherit" onClick={handleSignOut}>
+            Archive
           </Button>
           <Typography color="inherit" style={{ marginRight: "30px" }}>
             Hi! {user.email}
@@ -165,83 +161,46 @@ export function App(props) {
         </Toolbar>
       </AppBar>
       <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "30px" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "30px",
+        }}
       >
-        <Card style={{ width: 500 }}>
+        <Card>
           <CardActionArea>
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                2/5/1997
-              </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Today was a great day.
-              </Typography>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-export function Create(props) {
-  const [user, setUser] = useState(null);
-  let history = useHistory();
-
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        history.push("/");
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
-  };
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((u) => {
-      if (u) {
-        setUser(u);
-      } else {
-        history.push("/");
-      }
-    });
-
-    return unsubscribe;
-  }, [history]);
-
-  return (
-    <div>
-      <AppBar position="static" color={lightGreen}>
-        <Toolbar>
-          <Typography
-            variant="h6"
-            color="inherit"
-            style={{ flexGrow: 1, marginLeft: "30px" }}
-          >
-            My Journal
-          </Typography>
-          <Typography color="inherit" style={{ marginRight: "30px" }}>
-            Hi! {user.email}
-          </Typography>
-          <Button color="inherit" onClick={handleSignOut}>
-            Sign out
-          </Button>
-        </Toolbar>
-      </AppBar>
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "30px" }}
-      >
-        <Card style={{ width: 500 }}>
-          <CardActionArea>
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="h2">
-                2/5/1997
-              </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Today was a great day.
-              </Typography>
+            <CardContent
+              style={{
+                width: 500,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <TextField
+                value={new_entry}
+                onChange={(event) => {
+                  setNewEntry(event.target.value);
+                }}
+                style={{ marginBottom: 30 }}
+                id="outlined-multiline-static"
+                label=""
+                multiline
+                rows={6}
+                defaultValue="Start your entry..."
+                variant="outlined"
+              />
+              <Button
+                variant="contained"
+                onClick={() => {
+                  db.collection("users")
+                    .doc(user.uid)
+                    .collection("entries")
+                    .add({ text: new_entry, date: new Date() });
+                }}
+              >
+                Submit
+              </Button>
             </CardContent>
           </CardActionArea>
         </Card>
